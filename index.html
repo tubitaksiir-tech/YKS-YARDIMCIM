@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>YKS YARDIMCIM - KOMUTAN MERİÇ</title>
     <style>
-        /* --- CORE THEME: CYBERPUNK NEON --- */
+        /* --- CORE THEME --- */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
 
         :root {
             --neon-blue: #00f3ff;
-            --neon-pink: #ff00ff;
+            --neon-pink: #ff0055;
             --neon-gold: #ffd700;
             --neon-green: #0aff0a;
-            --neon-red: #ff3333;
             --bg-dark: #050510;
-            --glass-panel: rgba(10, 10, 25, 0.85); /* Arka planı biraz gösterir */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -25,250 +23,246 @@
             background-color: var(--bg-dark);
             color: white;
             font-family: 'Rajdhani', sans-serif;
-            height: 100vh;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Yatay taşmayı engelle */
+            overflow-y: auto;   /* Dikey kaydırmaya izin ver */
         }
 
-        /* --- ARKA PLAN UZAY SAVAŞI (CANVAS) --- */
-        #spaceCanvas {
+        /* --- SAVAŞ ALANI (EN ARKA PLAN) --- */
+        #warCanvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; /* En arkada */
-            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            z-index: -1;
+            background: radial-gradient(circle at bottom, #100b20 0%, #000000 100%);
         }
 
-        /* --- LAYOUT --- */
-        #app { display: flex; height: 100%; position: relative; z-index: 1; }
+        /* --- ANA DÜZEN (LAYOUT) --- */
+        #app {
+            display: flex;
+            min-height: 100vh;
+            /* Mobilde alt alta, PC'de yan yana olması için flex-wrap */
+            flex-wrap: wrap; 
+        }
 
-        /* SIDEBAR (SOL MENÜ) */
+        /* --- SOL MENÜ (SIDEBAR) --- */
         .sidebar {
-            width: 340px; min-width: 340px;
-            background: rgba(5, 5, 10, 0.9);
+            width: 320px;
+            /* Yükseklik ekran kadar olsun ama kayabilsin */
+            height: 100vh; 
+            position: sticky; top: 0; /* PC'de sabit kalsın */
+            background: rgba(5, 5, 12, 0.9);
             border-right: 2px solid var(--neon-blue);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
             display: flex; flex-direction: column;
-            padding: 25px;
-            box-shadow: 10px 0 50px rgba(0, 243, 255, 0.15);
-            z-index: 20; overflow-y: auto;
+            padding: 20px;
+            overflow-y: auto; /* Menü içeriği taşarsa kaydır */
+            z-index: 50;
         }
 
         .logo-box {
-            width: 140px; height: 140px; margin: 0 auto 20px;
-            border-radius: 50%; border: 4px solid var(--neon-gold);
+            width: 120px; height: 120px; margin: 0 auto 15px; flex-shrink: 0;
+            border-radius: 50%; border: 3px solid var(--neon-gold);
             background-color: #000;
             background-image: url('logo.jpeg'); 
             background-size: cover; background-position: center;
-            box-shadow: 0 0 40px var(--neon-gold), inset 0 0 20px var(--neon-gold);
-            animation: pulseLogo 3s infinite alternate;
+            box-shadow: 0 0 20px var(--neon-gold);
+            animation: pulse 2s infinite;
         }
-        @keyframes pulseLogo { from { box-shadow: 0 0 20px var(--neon-gold); } to { box-shadow: 0 0 50px var(--neon-gold); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 15px var(--neon-gold); } 50% { box-shadow: 0 0 35px var(--neon-gold); } 100% { box-shadow: 0 0 15px var(--neon-gold); } }
 
         h1 {
-            font-family: 'Orbitron'; font-size: 26px; text-align: center; margin: 10px 0;
+            font-family: 'Orbitron'; font-size: 24px; text-align: center; margin: 5px 0;
             background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
         }
-        h2 { text-align: center; font-size: 14px; color: #aaa; letter-spacing: 4px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; }
+        h2 { text-align: center; font-size: 14px; color: #aaa; letter-spacing: 3px; margin-bottom: 20px; font-weight: bold; }
 
         /* BUTONLAR */
+        .nav-buttons { display: flex; flex-direction: column; gap: 10px; }
         .menu-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            color: #ddd; padding: 15px; margin-bottom: 12px;
+            color: #ddd; padding: 14px;
             text-align: left; font-family: 'Orbitron'; cursor: pointer;
-            transition: 0.3s; border-radius: 8px; font-size: 15px; display: flex; align-items: center;
+            transition: 0.3s; border-radius: 8px; font-size: 15px;
+            display: flex; align-items: center;
         }
-        .menu-btn:hover { 
-            background: linear-gradient(90deg, rgba(0, 243, 255, 0.2), transparent);
-            border-color: var(--neon-blue); padding-left: 25px; box-shadow: 0 0 15px var(--neon-blue);
-        }
+        .menu-btn:hover { background: rgba(0, 243, 255, 0.15); border-color: var(--neon-blue); transform: translateX(5px); }
         .menu-btn.active {
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), transparent);
-            border-left: 5px solid var(--neon-gold); color: var(--neon-gold); text-shadow: 0 0 5px var(--neon-gold);
+            border-left: 5px solid var(--neon-gold); color: var(--neon-gold);
         }
 
-        /* İÇERİK ALANI */
+        /* --- İÇERİK ALANI --- */
         .main-content {
-            flex: 1; position: relative; overflow-y: auto; padding: 40px;
-            background: rgba(0,0,0,0.6); /* Arka planı hafif karart ki yazılar okunsun */
-            -webkit-overflow-scrolling: touch;
+            flex: 1; /* Kalan alanı kapla */
+            padding: 30px;
+            position: relative;
+            /* Arkadaki savaşı görmek için şeffaflık ayarı */
+            background: transparent; 
         }
 
-        /* DASHBOARD */
-        .home-title { font-size: 48px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .stat-card {
-            background: rgba(20, 20, 40, 0.8); backdrop-filter: blur(5px);
-            padding: 30px; border-radius: 20px; border: 1px solid; text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5); position: relative; overflow: hidden;
+        .home-title { 
+            font-size: 42px; margin-bottom: 10px; 
+            text-shadow: 0 0 10px black; 
         }
-        .stat-card::before {
-            content:''; position: absolute; top:-50%; left:-50%; width:200%; height:200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: rotate(45deg); animation: shine 3s infinite;
-        }
-        @keyframes shine { 0% {top:-150%; left:-150%;} 100% {top:150%; left:150%;} }
-        .stat-val { font-size: 60px; font-weight: 900; margin: 15px 0; text-shadow: 0 0 20px currentColor; }
-
-        /* MEGA KÜTÜPHANE KARTLARI */
-        .grid-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .card-topic { 
-            background: linear-gradient(160deg, rgba(20,20,40,0.9), rgba(5,5,10,0.95));
-            border: 1px solid #444; border-radius: 15px; padding: 25px; cursor: pointer; 
-            transition: 0.4s; position: relative; overflow: hidden;
-        }
-        .card-topic:hover { 
-            transform: translateY(-10px) scale(1.02); 
-            border-color: var(--neon-pink); 
-            box-shadow: 0 10px 40px rgba(188, 19, 254, 0.3); 
-        }
-        .card-topic h3 { color: white; font-size: 22px; margin-top: 0; }
-        .topic-status { position: absolute; top: 15px; right: 15px; font-size: 20px; }
-
-        /* READER (DERS NOTLARI) */
-        .reader-container {
-            max-width: 1200px; margin: 0 auto; 
-            background: rgba(12, 12, 25, 0.96); 
-            border: 1px solid var(--neon-blue);
-            padding: 60px; border-radius: 20px; 
-            box-shadow: 0 0 100px rgba(0, 243, 255, 0.15); 
-            display: none; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reader-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-blue); padding-bottom: 20px; margin-bottom: 40px; }
-        .reader-title { font-family: 'Orbitron'; font-size: 38px; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
         
-        /* ZENGİN İÇERİK STİLLERİ */
-        .content-body { font-size: 19px; line-height: 1.8; color: #e0e0e0; }
-        .content-body h3 { 
-            font-family: 'Orbitron'; color: var(--neon-gold); font-size: 26px; margin-top: 50px; 
-            border-left: 5px solid var(--neon-gold); padding-left: 20px; 
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
-            padding-top: 10px; padding-bottom: 10px;
+        /* İSTATİSTİK KARTLARI */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .stat-card {
+            background: rgba(20, 20, 35, 0.85); /* Arkası biraz görünsün ama yazı okunsun */
+            backdrop-filter: blur(10px);
+            padding: 25px; border-radius: 15px; border: 1px solid #444; text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
-        .content-body p { margin-bottom: 20px; }
-        .content-body strong { color: white; font-weight: 700; }
-        .content-body ul { background: rgba(255,255,255,0.03); padding: 30px 50px; border-radius: 15px; border: 1px dashed #555; }
-        .content-body li { margin-bottom: 12px; }
+        .stat-val { font-size: 50px; font-weight: 900; margin: 10px 0; }
 
-        /* KUTULAR */
-        .box-info { border-left: 5px solid var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 20px; margin: 30px 0; border-radius: 0 10px 10px 0; }
-        .box-warning { border-left: 5px solid var(--neon-red); background: rgba(255, 50, 50, 0.1); padding: 20px; margin: 30px 0; border-radius: 0 10px 10px 0; color: #ffcccc; }
+        /* KONU KARTLARI */
+        .grid-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card-topic { 
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #444; border-radius: 12px; padding: 20px; cursor: pointer; 
+            transition: 0.3s; position: relative;
+        }
+        .card-topic:hover { transform: translateY(-5px); border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); }
+        .topic-status { position: absolute; top: 15px; right: 15px; font-size: 18px; }
+
+        /* OKUMA EKRANI (READER) */
+        .reader-container {
+            background: rgba(12, 12, 25, 0.98); 
+            border: 1px solid var(--neon-blue);
+            padding: 40px; border-radius: 15px; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); 
+            display: none; animation: slideUp 0.4s;
+            margin-bottom: 50px;
+        }
+        .reader-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-blue); padding-bottom: 15px; margin-bottom: 30px; }
+        .reader-title { font-family: 'Orbitron'; font-size: 32px; color: var(--neon-blue); }
+        
+        .content-body { font-size: 18px; line-height: 1.7; color: #ddd; }
+        .content-body h3 { 
+            color: var(--neon-gold); font-size: 24px; margin-top: 40px; 
+            border-left: 4px solid var(--neon-gold); padding-left: 15px; 
+            background: rgba(255, 215, 0, 0.1); padding: 10px;
+        }
         .box-formula { 
             border: 2px solid var(--neon-green); background: rgba(10, 255, 10, 0.05); 
-            padding: 25px; margin: 35px 0; text-align: center; 
-            font-family: 'Orbitron'; font-size: 28px; color: var(--neon-green); 
-            border-radius: 15px; box-shadow: 0 0 30px rgba(10, 255, 10, 0.1);
+            padding: 20px; margin: 30px 0; text-align: center; 
+            font-family: 'Orbitron'; font-size: 24px; color: var(--neon-green); border-radius: 10px;
         }
-
-        /* SVG GRAFİKLERİ */
-        .diagram-box { 
-            background: #080810; border: 1px solid #444; border-radius: 15px; padding: 20px; 
-            margin: 40px 0; display: flex; justify-content: center; overflow-x: auto;
-        }
-        svg text { font-family: 'Rajdhani'; font-weight: bold; }
 
         /* QUIZ POPUP */
         .quiz-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
         .quiz-modal { 
-            background: #151525; padding: 40px; border-radius: 20px; border: 2px solid var(--neon-pink); 
-            width: 700px; max-width: 100%; text-align: center; box-shadow: 0 0 80px rgba(188, 19, 254, 0.3);
-            animation: bounceIn 0.5s;
+            background: #151525; padding: 30px; border-radius: 20px; border: 2px solid var(--neon-pink); 
+            width: 600px; max-width: 100%; text-align: center; box-shadow: 0 0 50px rgba(255, 0, 85, 0.3);
         }
         .btn-opt { 
-            width: 100%; padding: 18px; margin-top: 15px; background: #222; border: 1px solid #444; 
-            color: white; font-size: 18px; cursor: pointer; transition: 0.3s; border-radius: 10px; font-family: 'Rajdhani'; font-weight: bold;
+            width: 100%; padding: 15px; margin-top: 10px; background: #222; border: 1px solid #444; 
+            color: white; font-size: 16px; cursor: pointer; transition: 0.2s; border-radius: 8px; font-weight: bold;
         }
-        .btn-opt:hover { background: #333; border-color: var(--neon-blue); transform: scale(1.02); }
-
-        /* UTILS */
-        .hidden { display: none !important; }
+        
         .btn-glow { 
-            padding: 15px 40px; background: var(--neon-blue); color: #000; border: none; font-weight: 900; 
-            cursor: pointer; border-radius: 8px; font-size: 18px; font-family: 'Orbitron'; 
-            box-shadow: 0 0 20px var(--neon-blue); transition: 0.3s;
+            padding: 12px 30px; background: var(--neon-blue); color: #000; border: none; font-weight: 900; 
+            cursor: pointer; border-radius: 6px; font-size: 16px; font-family: 'Orbitron'; 
         }
-        .btn-glow:hover { background: white; box-shadow: 0 0 40px white; transform: translateY(-3px); }
 
-        /* --- MOBİL RESPONSIVE --- */
+        /* --- 📱 MOBILE OPTIMIZATION (HAYAT KURTARAN KISIM) --- */
         @media (max-width: 900px) {
             #app { flex-direction: column; }
-            .sidebar { width: 100%; min-width: auto; height: auto; border-right: none; border-bottom: 2px solid var(--neon-blue); position: relative; }
-            .logo-box { width: 90px; height: 90px; border-width: 3px; }
+            
+            /* Menüyü üstte sabitleme yerine akışa bırakıyoruz ki tuşlar kaybolmasın */
+            .sidebar {
+                width: 100%;
+                height: auto; /* Sabit yükseklik İPTAL */
+                min-height: auto;
+                position: relative; /* Sabitleme İPTAL */
+                border-right: none;
+                border-bottom: 2px solid var(--neon-blue);
+                padding: 20px;
+            }
+            
+            .logo-box { width: 90px; height: 90px; border-width: 3px; margin-bottom: 10px; }
             h1 { font-size: 22px; }
+            
+            /* İçerik alanı */
             .main-content { padding: 20px; }
-            .home-title { font-size: 30px; text-align: center; }
-            .stats-grid { grid-template-columns: 1fr; gap: 15px; }
-            .stat-val { font-size: 40px; }
-            .reader-container { padding: 25px; }
-            .reader-title { font-size: 24px; }
+            .home-title { font-size: 32px; text-align: center; }
+            
+            .stats-grid { grid-template-columns: 1fr; } /* Mobilde istatistikler alt alta */
+            .grid-topics { grid-template-columns: 1fr; } /* Kartlar alt alta */
+            
+            /* Reader */
+            .reader-container { padding: 20px; }
+            .reader-title { font-size: 22px; }
             .content-body { font-size: 16px; }
-            .box-formula { font-size: 20px; padding: 15px; }
+            .box-formula { font-size: 18px; word-break: break-all; }
+            
+            /* Diyagramlar taşmasın */
+            svg { max-width: 100%; height: auto; }
         }
 
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes bounceIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-<canvas id="spaceCanvas"></canvas>
+<canvas id="warCanvas"></canvas>
 
 <div id="app">
     <div class="sidebar">
         <div class="logo-box"></div>
         <h1>KOMUTAN MERİÇ</h1>
-        <h2>YKS SAVAŞ ÜSSÜ</h2>
+        <h2>GALAKTİK ÜS</h2>
         
-        <div style="margin: 15px 0; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px solid #333;">
-            <div style="display:flex; justify-content:space-between; color: var(--neon-gold); font-weight:bold; font-size: 14px; margin-bottom:5px;">
-                <span id="levelLabel">LEVEL 1</span>
+        <div style="margin: 10px 0; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #444;">
+            <div style="display:flex; justify-content:space-between; color: var(--neon-gold); font-weight:bold; font-size: 13px; margin-bottom:5px;">
+                <span id="levelLabel">LVL 1</span>
                 <span id="xpText">0 XP</span>
             </div>
-            <div style="height: 10px; background: #222; border-radius: 5px; overflow: hidden;">
-                <div id="xpBar" style="height: 100%; background: var(--neon-gold); width: 0%; transition: 0.5s; box-shadow: 0 0 10px var(--neon-gold);"></div>
+            <div style="height: 8px; background: #222; border-radius: 4px; overflow: hidden;">
+                <div id="xpBar" style="height: 100%; background: var(--neon-gold); width: 0%; transition: 0.5s;"></div>
             </div>
         </div>
 
-        <nav>
-            <button class="menu-btn active" onclick="nav('home')">🚀 ANA KARARGAH</button>
-            <button class="menu-btn" onclick="nav('topics')">📚 MEGA KÜTÜPHANE</button>
-            <button class="menu-btn" onclick="startRandomQuiz()">⚔️ SAVAŞ SİMÜLASYONU</button>
-            <button class="menu-btn" style="color:#ff5555" onclick="resetSys()">⚠️ SİSTEMİ İMHA ET</button>
-        </nav>
+        <div class="nav-buttons">
+            <button class="menu-btn active" onclick="nav('home')">🚀 ANA EKRAN</button>
+            <button class="menu-btn" onclick="nav('topics')">📚 KÜTÜPHANE</button>
+            <button class="menu-btn" onclick="startRandomQuiz()">⚔️ SAVAŞ (TEST)</button>
+            <button class="menu-btn" style="color:#ff5555" onclick="resetSys()">⚠️ İMHA ET</button>
+        </div>
     </div>
 
     <div class="main-content">
         <div id="view-home">
-            <h1 class="home-title">GÖREV ANI GELDİ <span style="color:var(--neon-gold)">KOMUTAN.</span></h1>
-            <p style="color: #ccc; font-size: 20px; text-align: center; margin-bottom: 40px; text-shadow: 0 0 5px black;">
-                Arka planda uzaylı istilası başladı. Fizik bilgini kullanarak evreni kurtar!
+            <h1 class="home-title">SAVAŞ BAŞLADI <span style="color:var(--neon-gold)">KOMUTAN!</span></h1>
+            <p style="color: #ccc; font-size: 18px; margin-bottom: 30px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 10px; border-left: 4px solid var(--neon-blue);">
+                Aşağıdaki "Ana Gemimiz" (Mavi) otomatik savunma yapıyor. Düşmanlar (Kırmızı) saldırıyor. Fizik bilginle kalkanları güçlendir!
             </p>
             
             <div class="stats-grid">
                 <div class="stat-card" style="border-color: var(--neon-blue);">
-                    <h3 style="margin:0; color:var(--neon-blue); font-size: 18px;">FETHEDİLEN KONULAR</h3>
+                    <h3 style="margin:0; color:var(--neon-blue); font-size: 16px;">GÖREVLER</h3>
                     <div id="statTopics" class="stat-val" style="color: var(--neon-blue);">0</div>
                 </div>
                 <div class="stat-card" style="border-color: var(--neon-gold);">
-                    <h3 style="margin:0; color:var(--neon-gold); font-size: 18px;">TOPLAM XP GÜCÜ</h3>
+                    <h3 style="margin:0; color:var(--neon-gold); font-size: 16px;">GÜÇ (XP)</h3>
                     <div id="statXP" class="stat-val" style="color: var(--neon-gold);">0</div>
                 </div>
             </div>
         </div>
 
         <div id="view-topics" class="hidden">
-            <h1 style="text-align: center; margin-bottom: 30px; color: var(--neon-pink); font-size: 32px; font-family: 'Orbitron'; text-shadow: 0 0 20px var(--neon-pink);">GALAKTİK FİZİK ARŞİVİ</h1>
+            <h1 style="text-align: center; margin-bottom: 30px; color: var(--neon-pink); font-family: 'Orbitron';">FİZİK ARŞİVİ</h1>
             <div class="grid-topics" id="topicGrid"></div>
         </div>
 
         <div id="view-reader" class="reader-container">
             <div class="reader-header">
-                <div class="reader-title" id="readTitle">Konu Başlığı</div>
-                <button class="btn-glow" style="padding: 10px 20px; font-size: 14px; background: #333; color: white; box-shadow:none; border:1px solid #555;" onclick="nav('topics')">KAPAT X</button>
+                <div class="reader-title" id="readTitle">Başlık</div>
+                <button class="btn-glow" style="padding: 8px 15px; font-size: 12px; background: #333; color: white; border:1px solid #555;" onclick="nav('topics')">KAPAT</button>
             </div>
             <div class="content-body" id="readBody"></div>
-            <div style="margin-top: 60px; text-align: center; border-top: 1px solid #333; padding-top: 30px;">
-                <button class="btn-glow" onclick="finishTopic()">✅ GÖREVİ TAMAMLA (+100 XP)</button>
+            <div style="margin-top: 40px; text-align: center; border-top: 1px solid #333; padding-top: 20px;">
+                <button class="btn-glow" onclick="finishTopic()">✅ GÖREVİ TAMAMLA</button>
             </div>
         </div>
     </div>
@@ -276,252 +270,195 @@
 
 <div id="quizModal" class="quiz-overlay">
     <div class="quiz-modal">
-        <h2 style="color: var(--neon-gold); font-size: 30px;">⚡ DÜŞMAN TESPİT EDİLDİ ⚡</h2>
-        <div id="quizQ" style="font-size: 24px; margin: 30px 0; font-weight: bold; color:white;">Soru yükleniyor...</div>
+        <h2 style="color: var(--neon-gold);">DÜŞMAN GEMİSİ TESPİT EDİLDİ!</h2>
+        <div id="quizQ" style="font-size: 20px; margin: 20px 0; color:white;">Soru...</div>
         <div id="quizOpts"></div>
-        <div id="quizRes" style="margin-top: 25px; font-weight: bold; font-size: 20px; min-height: 30px;"></div>
-        <button onclick="closeQuiz()" style="margin-top: 25px; background:transparent; border:1px solid #555; color:#aaa; padding:10px 30px; cursor:pointer; border-radius:5px;">ÇIKIŞ</button>
+        <div id="quizRes" style="margin-top: 20px; font-weight: bold; min-height: 25px;"></div>
+        <button onclick="closeQuiz()" style="margin-top: 20px; background:transparent; border:1px solid #555; color:#aaa; padding:10px 30px; cursor:pointer; border-radius:5px;">ÇIKIŞ</button>
     </div>
 </div>
 
 <script>
 /* ----------------------------------------------------------------
-   BÖLÜM 1: UZAY SAVAŞI ANİMASYONU (CANVAS)
+   BÖLÜM 1: GELİŞMİŞ SAVAŞ MOTORU (CANVAS)
    ---------------------------------------------------------------- */
-const canvas = document.getElementById('spaceCanvas');
+const canvas = document.getElementById('warCanvas');
 const ctx = canvas.getContext('2d');
 let w, h;
-let entities = [];
 
-function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+// Oyun Objeleri
+let player = { x: 0, y: 0, w: 40, h: 30, dir: 1 };
+let enemies = [];
+let bullets = [];
+let particles = [];
+let stars = [];
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    player.y = h - 60;
+    player.x = w / 2;
+}
 window.addEventListener('resize', resize);
 resize();
 
-class Entity {
-    constructor(x, y, type) {
-        this.x = x; this.y = y; this.type = type; // 0: Star, 1: Alien, 2: Laser
-        this.size = type === 0 ? Math.random() * 2 : (type === 1 ? 20 : 30); // Lazer uzunluğu
-        this.speed = type === 0 ? Math.random() * 0.5 + 0.1 : (type === 1 ? Math.random() + 0.5 : 8);
-        this.color = type === 0 ? `rgba(255,255,255,${Math.random()})` : (type === 1 ? '#0aff0a' : '#ff0055');
-        this.vx = type === 1 ? (Math.random()-0.5) : 0;
+// Star Class
+class Star {
+    constructor() { this.reset(); }
+    reset() { this.x = Math.random() * w; this.y = Math.random() * h; this.size = Math.random() * 2; this.speed = Math.random() * 0.8 + 0.1; }
+    update() { this.y += this.speed; if(this.y > h) this.y = 0; }
+    draw() { ctx.fillStyle = `rgba(255,255,255,${Math.random()})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
+}
+
+// Enemy Class
+class Enemy {
+    constructor() { this.reset(); this.y = Math.random() * -500; }
+    reset() {
+        this.x = Math.random() * (w - 30); this.y = -50;
+        this.speed = Math.random() * 2 + 1; this.w = 30; this.h = 30;
     }
-    update() {
-        this.y += this.speed;
-        if(this.type === 1) this.x += this.vx; // Alien yanal hareket
-        
-        // Reset or Remove
-        if(this.y > h) {
-            if(this.type === 2) return false; // Lazer yok ol
-            this.y = -20; this.x = Math.random() * w; // Yıldız ve Alien döngüsü
-        }
-        return true;
-    }
+    update() { this.y += this.speed; if(this.y > h) this.reset(); }
     draw() {
-        ctx.fillStyle = this.color;
-        if(this.type === 0) {
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-        } else if (this.type === 1) {
-            // Alien Çizimi (Basit Gemi)
-            ctx.shadowBlur = 10; ctx.shadowColor = this.color;
-            ctx.fillRect(this.x, this.y, 20, 10);
-            ctx.fillRect(this.x+5, this.y-5, 10, 5);
-            ctx.shadowBlur = 0;
-            // Ateş Etme Şansı
-            if(Math.random() < 0.005) entities.push(new Entity(this.x+10, this.y+10, 2));
-        } else if (this.type === 2) {
-            // Lazer Çizimi
-            ctx.shadowBlur = 10; ctx.shadowColor = this.color;
-            ctx.fillRect(this.x, this.y, 2, 15);
-            ctx.shadowBlur = 0;
-        }
+        ctx.fillStyle = '#ff0055';
+        ctx.shadowBlur = 10; ctx.shadowColor = '#ff0055';
+        // Basit Gemi Çizimi (Aşağı Bakan Üçgen)
+        ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x+this.w, this.y); ctx.lineTo(this.x+this.w/2, this.y+this.h); ctx.fill();
+        ctx.shadowBlur = 0;
     }
 }
 
-// Başlangıç: 100 yıldız, 10 alien
-for(let i=0; i<100; i++) entities.push(new Entity(Math.random()*w, Math.random()*h, 0));
-for(let i=0; i<10; i++) entities.push(new Entity(Math.random()*w, Math.random()*h, 1));
+// Bullet Class
+class Bullet {
+    constructor(x, y, isEnemy) {
+        this.x = x; this.y = y; this.isEnemy = isEnemy;
+        this.speed = isEnemy ? 5 : 8; this.active = true;
+    }
+    update() {
+        this.y += this.isEnemy ? this.speed : -this.speed;
+        if(this.y < 0 || this.y > h) this.active = false;
+    }
+    draw() {
+        ctx.fillStyle = this.isEnemy ? 'red' : '#00f3ff';
+        ctx.fillRect(this.x, this.y, 4, 10);
+    }
+}
 
+// Particle Class (Explosion)
+class Particle {
+    constructor(x, y, color) {
+        this.x = x; this.y = y; this.color = color;
+        this.vx = (Math.random()-0.5)*8; this.vy = (Math.random()-0.5)*8;
+        this.life = 1.0;
+    }
+    update() { this.x += this.vx; this.y += this.vy; this.life -= 0.04; }
+    draw() {
+        ctx.globalAlpha = this.life; ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
+}
+
+// Setup
+for(let i=0; i<100; i++) stars.push(new Star());
+for(let i=0; i<6; i++) enemies.push(new Enemy());
+
+// --- GAME LOOP ---
 function loop() {
     ctx.clearRect(0,0,w,h);
-    entities = entities.filter(e => {
-        e.draw();
-        return e.update();
+
+    // Stars
+    stars.forEach(s => { s.update(); s.draw(); });
+
+    // Player (Auto Move)
+    player.x += player.dir * 2;
+    if(player.x > w - 50 || player.x < 10) player.dir *= -1;
+    
+    // Player Draw
+    ctx.fillStyle = '#00f3ff'; ctx.shadowBlur = 15; ctx.shadowColor = '#00f3ff';
+    ctx.beginPath(); ctx.moveTo(player.x+20, player.y); ctx.lineTo(player.x, player.y+30); ctx.lineTo(player.x+40, player.y+30); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Player Shoot (Auto)
+    if(Math.random() < 0.05) bullets.push(new Bullet(player.x+18, player.y, false));
+
+    // Enemies
+    enemies.forEach(e => {
+        e.update(); e.draw();
+        // Collision with Player Bullet
+        bullets.forEach(b => {
+            if(!b.isEnemy && b.active && b.x > e.x && b.x < e.x+e.w && b.y > e.y && b.y < e.y+e.h) {
+                // Explosion
+                for(let k=0; k<8; k++) particles.push(new Particle(e.x+15, e.y+15, '#ffaa00'));
+                e.reset(); b.active = false;
+            }
+        });
     });
+
+    // Bullets
+    bullets = bullets.filter(b => b.active);
+    bullets.forEach(b => { b.update(); b.draw(); });
+
+    // Particles
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => { p.update(); p.draw(); });
+
     requestAnimationFrame(loop);
 }
 loop();
 
 /* ----------------------------------------------------------------
-   BÖLÜM 2: MEGA KÜTÜPHANE (GENİŞLETİLMİŞ İÇERİK)
+   BÖLÜM 2: İÇERİK VERİTABANI (Dolu İçerik)
    ---------------------------------------------------------------- */
 const DB = [
     {
         id: "fizik_giris",
         title: "1. Fizik Bilimine Giriş",
-        desc: "Fizik nedir? Alt dallar, büyüklükler ve vektörler.",
+        desc: "Fizik nedir? Alt dallar, büyüklükler.",
         content: `
             <h3>1. Fizik Nedir?</h3>
-            <p>Fizik; madde ve enerji arasındaki etkileşimi inceleyen, doğa olaylarını açıklamaya çalışan, <strong>gözlem ve deneye</strong> dayalı bilimdir. Fizik kanunları evrenseldir ancak "Mutlak Doğru" değildir; zamanla değişebilir.</p>
-            <div class="box-warning">⚠️ DİKKAT: Metafizik (ruhlar), Teoloji (din), Astroloji (burçlar) fizik değildir! Fizik sadece ölçülebilir evrenle ilgilenir.</div>
-
-            <h3>2. Fiziğin Alt Dalları (Kodlama: KAMYONET)</h3>
-            <ul>
-                <li><strong>K</strong>atıhal Fiziği: Kristal yapılar, nanoteknoloji, yarı iletkenler.</li>
-                <li><strong>A</strong>tom Fiziği: Atomun yapısı, moleküller.</li>
-                <li><strong>M</strong>ekanik: Hareket, kuvvet, denge.</li>
-                <li><strong>Y</strong>üksek Enerji: CERN, atom altı parçacıklar.</li>
-                <li><strong>O</strong>ptik: Işık, gölge, renkler.</li>
-                <li><strong>N</strong>ükleer: Atom ÇEKİRDEĞİ (Fisyon/Füzyon).</li>
-                <li><strong>E</strong>lektromanyetizma: Yükler, mıknatıslar.</li>
-                <li><strong>T</strong>ermodinamik: Isı ve sıcaklık.</li>
-            </ul>
-
-            <h3>3. Büyüklükler</h3>
-            <div class="box-info">
-                <strong>Temel Büyüklükler (KISA MUZ):</strong> Kütle, Işık Şiddeti, Sıcaklık, Akım, Madde, Uzunluk, Zaman.<br>
-                <strong>Vektörel Büyüklükler (Yönlü):</strong> Kuvvet, Hız, İvme, Yer Değiştirme.
-            </div>
-
-            <h3>4. Vektörlerin Toplanması</h3>
-            <div class="diagram-box">
-                <svg width="300" height="150" viewBox="0 0 300 150">
-                    <line x1="20" y1="100" x2="280" y2="100" stroke="#444" stroke-width="2" />
-                    <line x1="50" y1="100" x2="150" y2="100" stroke="#00f3ff" stroke-width="4" marker-end="url(#arrow)" />
-                    <text x="80" y="80" fill="#00f3ff">F1 = 10N</text>
-                    <line x1="150" y1="100" x2="200" y2="100" stroke="#ffd700" stroke-width="4" marker-end="url(#arrow)" />
-                    <text x="160" y="70" fill="#ffd700">F2 = 5N</text>
-                    <text x="50" y="140" fill="white">Bileşke (R) = 15N (Sağa)</text>
-                    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="white" /></marker></defs>
-                </svg>
-            </div>
+            <p>Madde ve enerji arasındaki etkileşimi inceleyen bilim dalıdır. Gözlem ve deneye dayanır.</p>
+            <div class="box-formula">Fizik = Gözlem + Deney + Matematik</div>
+            <h3>2. Alt Dallar (KAMYONET)</h3>
+            <ul><li>K: Katıhal</li><li>A: Atom</li><li>M: Mekanik</li><li>Y: Yüksek Enerji</li><li>O: Optik</li><li>N: Nükleer</li><li>E: Elektromanyetizma</li><li>T: Termodinamik</li></ul>
+            <h3>3. Büyüklükler (KISA MUZ)</h3>
+            <p>Kütle, Işık Şiddeti, Sıcaklık, Akım, Madde, Uzunluk, Zaman.</p>
         `,
-        questions: [
-            { q: "Aşağıdakilerden hangisi Temel Büyüklük değildir?", opts: ["Kütle", "Zaman", "Hız", "Sıcaklık"], a: 2 },
-            { q: "Kristal yapıları ve nanoteknolojiyi hangi dal inceler?", opts: ["Optik", "Katıhal Fiziği", "Mekanik", "Nükleer"], a: 1 }
-        ]
+        questions: [{ q: "Hangisi temel büyüklüktür?", opts: ["Hız", "Kuvvet", "Zaman", "Enerji"], a: 2 }]
     },
     {
         id: "madde",
         title: "2. Madde ve Özellikleri",
-        desc: "Özkütle, dayanıklılık, adhezyon ve kohezyon.",
+        desc: "Özkütle, Dayanıklılık.",
         content: `
-            <h3>1. Özkütle (Yoğunluk)</h3>
-            <p>Birim hacimdeki madde miktarıdır. Sabit sıcaklık ve basınçta maddeler için <strong>ayırt edici</strong> özelliktir. Kütle artsa bile hacim de artacağı için özkütle değişmez.</p>
+            <h3>1. Özkütle</h3>
             <div class="box-formula">d = m / V</div>
-            
+            <p>Ayırt edici özelliktir.</p>
             <h3>2. Dayanıklılık</h3>
-            <p>Bir cismin kendi ağırlığına karşı dayanıklılığı <strong>Kesit Alanı / Hacim</strong> ile orantılıdır. Düzgün geometrik cisimlerde bu oran <strong>1 / Yükseklik</strong>'tir. Yani cisim büyüdükçe kendi ağırlığına karşı zayıflar.</p>
-
-            <h3>3. Yüzey Kuvvetleri</h3>
-            <ul>
-                <li><strong>Adhezyon (Yapışma):</strong> Farklı moleküller arası çekim. (Su damlasının cama yapışması, Kılcallık etkisi).</li>
-                <li><strong>Kohezyon (Tutunma):</strong> Aynı moleküller arası çekim. (Su damlasının küresel olması, Yüzey Gerilimi).</li>
-            </ul>
-            <div class="box-warning">Deterjan ve sıcaklık artışı yüzey gerilimini AZALTIR!</div>
+            <p>Kesit Alanı / Hacim ile orantılıdır.</p>
         `,
-        questions: [
-            { q: "Kütle-Hacim grafiğinin eğimi neyi verir?", opts: ["Ağırlık", "Özkütle", "Dayanıklılık", "Kuvvet"], a: 1 },
-            { q: "Su damlasının küresel şekil almasını ne sağlar?", opts: ["Adhezyon", "Kohezyon", "Kaldırma", "Sürtünme"], a: 1 }
-        ]
+        questions: [{ q: "d=m/V formülü neyi verir?", opts: ["Hız", "Özkütle", "Basınç"], a: 1 }]
     },
     {
         id: "hareket",
         title: "3. Hareket ve Kuvvet",
-        desc: "Hız vs Sürat, İvme, Newton Yasaları.",
+        desc: "Newton Yasaları, Hız.",
         content: `
-            <h3>1. Kavramlar</h3>
-            <p><strong>Yer Değiştirme (Δx):</strong> İlk ve son konum arası vektörel mesafe.<br>
-            <strong>Alınan Yol:</strong> Gidilen toplam mesafe (Skaler).</p>
-            <div class="box-formula">
-                Hız (v) = Δx / t (Vektörel)<br>
-                Sürat = Yol / t (Skaler)
-            </div>
-
-            <h3>2. Grafikler</h3>
-            <ul>
-                <li><strong>Konum-Zaman</strong> eğimi HIZI verir.</li>
-                <li><strong>Hız-Zaman</strong> eğimi İVMEYİ, altındaki alan YER DEĞİŞTİRMEYİ verir.</li>
-                <li><strong>İvme-Zaman</strong> altındaki alan HIZ DEĞİŞİMİNİ verir.</li>
-            </ul>
-
-            <h3>3. Newton'un Yasaları</h3>
-            <ul>
-                <li><strong>Eylemsizlik:</strong> Net kuvvet sıfırsa duran durur, giden sabit hızla gider.</li>
-                <li><strong>Temel Yasa (F=ma):</strong> Kuvvet varsa ivme vardır.</li>
-                <li><strong>Etki-Tepki:</strong> Her etkiye eşit ve zıt bir tepki vardır. (Tepki kuvveti temas gerektirir).</li>
-            </ul>
+            <h3>1. Newton Yasaları</h3>
+            <ul><li>Eylemsizlik</li><li>F=m.a</li><li>Etki-Tepki</li></ul>
+            <div class="box-formula">F_net = m . a</div>
         `,
-        questions: [
-            { q: "Hız-Zaman grafiğinin altındaki alan neyi verir?", opts: ["İvme", "Hız", "Yer Değiştirme", "Kuvvet"], a: 2 },
-            { q: "Aracın göstergesi neyi ölçer?", opts: ["Hız", "Sürat", "Yer Değiştirme", "İvme"], a: 1 }
-        ]
-    },
-    {
-        id: "isi",
-        title: "4. Isı ve Sıcaklık",
-        desc: "Termodinamik, Öz ısı, Hal Değişimi.",
-        content: `
-            <h3>1. Farklar</h3>
-            <p>Sıcaklık bir ölçümdür (Termometre), Isı bir enerjidir (Kalorimetre). Isı sıcak maddeden soğuk maddeye akar.</p>
-
-            <h3>2. Hal Değişimi</h3>
-            <p>Maddeler hal değiştirirken (Erime/Kaynama) sıcaklıkları <strong>SABİT KALIR</strong>. Alınan ısı, molekül bağlarını kırmaya harcanır.</p>
-            <div class="box-formula">
-                Q = m . c . ΔT (Sıcaklık değişimi)<br>
-                Q = m . L (Hal değişimi)
-            </div>
-
-            <h3>3. Genleşme</h3>
-            <p>Isınan maddeler genleşir (Su hariç, su +4 derecede en yoğun haldedir). Fotokopi gibi büyüme gerçekleşir; delikli bir levha ısıtılırsa delik de büyür.</p>
-        `,
-        questions: [
-            { q: "Isı birimi nedir?", opts: ["Celcius", "Kelvin", "Watt", "Joule"], a: 3 },
-            { q: "Hal değişimi sırasında sıcaklık?", opts: ["Artar", "Azalır", "Sabit Kalır", "Sıfır Olur"], a: 2 }
-        ]
-    },
-    {
-        id: "optik",
-        title: "5. Optik ve Renkler",
-        desc: "Aydınlanma, Aynalar, Işık Renkleri.",
-        content: `
-            <h3>1. Işık Renkleri</h3>
-            <p>Fizikte ana renkler: <strong>Kırmızı, Yeşil, Mavi</strong>'dir. (Boyadaki gibi sarı değil!).</p>
-            <ul>
-                <li>Kırmızı + Yeşil = <strong>Sarı</strong></li>
-                <li>Kırmızı + Mavi = <strong>Magenta</strong></li>
-                <li>Yeşil + Mavi = <strong>Cyan</strong></li>
-                <li>Hepsi = Beyaz</li>
-            </ul>
-
-            <h3>2. Aynalar</h3>
-            <div class="box-info">
-                <strong>Düz Ayna:</strong> Simetrik, sanal, eşit boy.<br>
-                <strong>Çukur Ayna:</strong> Odaklar. Görüntü ters/düz, büyük/küçük olabilir.<br>
-                <strong>Tümsek Ayna:</strong> Dağıtır. Görüntü daima DÜZ, KÜÇÜK ve SANALDIR.
-            </div>
-
-            <h3>3. Kırılma</h3>
-            <p>Az yoğundan çok yoğuna geçen ışık Normale YAKLAŞIR. (Havadan suya). Çoktan aza geçen uzaklaşır.</p>
-        `,
-        questions: [
-            { q: "Işıkta Kırmızı + Yeşil hangi rengi verir?", opts: ["Mavi", "Mor", "Sarı", "Beyaz"], a: 2 },
-            { q: "Daima küçük ve düz görüntü veren ayna?", opts: ["Düz", "Çukur", "Tümsek", "Hiçbiri"], a: 2 }
-        ]
+        questions: [{ q: "F=m.a yasası kime aittir?", opts: ["Einstein", "Newton", "Tesla"], a: 1 }]
     }
 ];
 
 /* ----------------------------------------------------------------
-   BÖLÜM 3: UYGULAMA MANTIĞI (JS)
+   BÖLÜM 3: APP MANTIĞI
    ---------------------------------------------------------------- */
 let user = { xp: 0, level: 1, finished: [], totalXP: 0 };
-
 window.onload = function() {
+    loadSys(); renderTopics(); resize();
     const img = new Image(); img.src = 'logo.jpeg';
     img.onload = () => { document.querySelector('.logo-box').style.backgroundImage = "url('logo.jpeg')"; };
-    loadSys(); renderTopics();
-    
-    // Mobil düzeltme
-    if(window.innerWidth < 900) { document.querySelector('.sidebar').scrollTo(0,0); }
 };
 
 function nav(view) {
@@ -537,88 +474,52 @@ function nav(view) {
         document.getElementById('view-topics').classList.remove('hidden');
         document.querySelectorAll('.menu-btn')[1].classList.add('active');
     }
-    
-    // Mobilde scroll yukarı
-    if(window.innerWidth < 900 && view !== 'none') {
-        window.scrollTo({ top: document.querySelector('.sidebar').clientHeight, behavior: 'smooth' });
-    }
+    // Mobilde üst tarafa kaydır
+    if(window.innerWidth < 900) window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function renderTopics() {
     const grid = document.getElementById('topicGrid'); grid.innerHTML = '';
     DB.forEach(t => {
         const isDone = user.finished.includes(t.id);
-        const statusHTML = isDone ? '<span style="color:var(--neon-green)">✅ GÖREV TAMAM</span>' : '<span style="color:#666">⭕ BEKLİYOR</span>';
         const card = document.createElement('div'); card.className = 'card-topic';
-        card.innerHTML = `
-            <div class="topic-status">${isDone ? '🏆' : ''}</div>
-            <h3>${t.title}</h3>
-            <p style="color:#aaa; font-size:14px;">${t.desc}</p>
-            <div style="font-weight:bold; font-size:13px; margin-top:15px;">${statusHTML}</div>
-        `;
+        card.innerHTML = `<div class="topic-status">${isDone?'🏆':''}</div><h3>${t.title}</h3><p style="color:#aaa; font-size:14px;">${t.desc}</p>`;
         card.onclick = () => openReader(t.id); grid.appendChild(card);
     });
 }
-
 let activeTopic = null;
 function openReader(id) {
     activeTopic = id; const t = DB.find(x => x.id === id); nav('none');
     const r = document.getElementById('view-reader'); r.style.display = 'block';
-    document.getElementById('readTitle').innerText = t.title; 
-    document.getElementById('readBody').innerHTML = t.content;
-    if(window.innerWidth < 900) window.scrollTo({ top: document.querySelector('.sidebar').clientHeight, behavior: 'smooth' });
+    document.getElementById('readTitle').innerText = t.title; document.getElementById('readBody').innerHTML = t.content;
+    if(window.innerWidth < 900) window.scrollTo({top:0, behavior:'smooth'});
 }
-
 function finishTopic() {
-    if(activeTopic && !user.finished.includes(activeTopic)) {
-        user.finished.push(activeTopic); addXP(100); 
-        alert("GÖREV BAŞARILI: +100 XP KAZANDINIZ!"); saveSys(); nav('topics'); renderTopics();
-    } else { alert("Bu görevi zaten tamamladınız Komutan."); nav('topics'); }
+    if(activeTopic && !user.finished.includes(activeTopic)) { user.finished.push(activeTopic); addXP(100); alert("GÖREV TAMAMLANDI! +100 XP"); saveSys(); nav('topics'); renderTopics(); }
+    else { alert("Bu görev zaten yapıldı."); nav('topics'); }
 }
-
 function startRandomQuiz() {
-    const t = DB[Math.floor(Math.random() * DB.length)];
-    const q = t.questions[Math.floor(Math.random() * t.questions.length)];
+    const t = DB[Math.floor(Math.random() * DB.length)]; const q = t.questions[Math.floor(Math.random() * t.questions.length)];
     const m = document.getElementById('quizModal'); m.style.display = 'flex';
     document.getElementById('quizQ').innerText = q.q; document.getElementById('quizRes').innerText = "";
     const opts = document.getElementById('quizOpts'); opts.innerHTML = '';
-    
     q.opts.forEach((opt, idx) => {
         const btn = document.createElement('button'); btn.className = 'btn-opt'; btn.innerText = opt;
         btn.onclick = () => {
-            if(idx === q.a) { 
-                btn.style.background = 'var(--neon-green)'; btn.style.color = 'black';
-                document.getElementById('quizRes').innerText = "DOĞRU CEVAP! (+20 XP)";
-                document.getElementById('quizRes').style.color = "var(--neon-green)";
-                addXP(20); 
-            } else { 
-                btn.style.background = 'var(--neon-red)';
-                document.getElementById('quizRes').innerText = "YANLIŞ CEVAP! SİSTEM HASAR ALDI.";
-                document.getElementById('quizRes').style.color = "var(--neon-red)";
-            }
-        }; 
-        opts.appendChild(btn);
+            if(idx === q.a) { btn.style.background = 'var(--neon-green)'; btn.style.color='black'; document.getElementById('quizRes').innerText = "DOĞRU! (+20 XP)"; addXP(20); }
+            else { btn.style.background = 'red'; document.getElementById('quizRes').innerText = "YANLIŞ!"; }
+        }; opts.appendChild(btn);
     });
 }
 function closeQuiz() { document.getElementById('quizModal').style.display = 'none'; }
-
-// KAYIT SİSTEMİ
-function loadSys() { const d = localStorage.getItem('yks_titan_v5'); if(d) user = JSON.parse(d); updateHUD(); }
-function saveSys() { localStorage.setItem('yks_titan_v5', JSON.stringify(user)); updateHUD(); }
-function resetSys() { if(confirm("DİKKAT! TÜM İLERLEME SİLİNECEK. ONAYLIYOR MUSUNUZ?")) { localStorage.removeItem('yks_titan_v5'); location.reload(); } }
-function addXP(amount) { 
-    user.xp += amount; user.totalXP += amount; 
-    const req = user.level * 250; 
-    if(user.xp >= req) { user.xp -= req; user.level++; alert(`TERFİ ALDINIZ! YENİ RÜTBE: LEVEL ${user.level}`); } 
-    saveSys(); 
-}
-function updateHUD() { 
-    const req = user.level * 250; const pct = (user.xp / req) * 100; 
-    document.getElementById('xpText').innerText = `${user.xp}/${req} XP`; 
-    document.getElementById('levelLabel').innerText = `LEVEL ${user.level}`; 
-    document.getElementById('xpBar').style.width = `${pct}%`; 
-    document.getElementById('statTopics').innerText = user.finished.length; 
-    document.getElementById('statXP').innerText = user.totalXP; 
+function loadSys() { const d = localStorage.getItem('yks_war_v1'); if(d) user = JSON.parse(d); updateHUD(); }
+function saveSys() { localStorage.setItem('yks_war_v1', JSON.stringify(user)); updateHUD(); }
+function resetSys() { if(confirm("SIFIRLAMAK İSTİYOR MUSUN?")) { localStorage.removeItem('yks_war_v1'); location.reload(); } }
+function addXP(amount) { user.xp += amount; user.totalXP += amount; const req = user.level*200; if(user.xp>=req){user.xp-=req; user.level++; alert("SEVİYE ATLADIN!");} saveSys(); }
+function updateHUD() {
+    const req = user.level*200; const pct = (user.xp/req)*100;
+    document.getElementById('xpText').innerText = `${user.xp}/${req}`; document.getElementById('levelLabel').innerText = `LVL ${user.level}`;
+    document.getElementById('xpBar').style.width = `${pct}%`; document.getElementById('statTopics').innerText = user.finished.length; document.getElementById('statXP').innerText = user.totalXP;
 }
 </script>
 </body>
