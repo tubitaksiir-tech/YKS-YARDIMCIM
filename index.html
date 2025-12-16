@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YKS YARDIMCIM - KOMUTAN MERİÇ</title>
+    <style>
+        /* --- CORE THEME: CYBERPUNK TITAN --- */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #bc13fe;
+            --neon-gold: #ffd700;
+            --neon-green: #0aff0a;
+            --bg-dark: #050510;
+            --panel-bg: rgba(15, 15, 30, 0.98);
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        #app { display: flex; height: 100%; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 340px;
+            background: var(--panel-bg);
+            border-right: 2px solid var(--neon-blue);
+            display: flex; flex-direction: column;
+            padding: 25px;
+            box-shadow: 10px 0 50px rgba(0, 243, 255, 0.1);
+            z-index: 20;
+        }
+
+        .logo-box {
+            width: 150px; height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 4px solid var(--neon-gold);
+            background-color: #000;
+            background-image: url('logo.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 30px var(--neon-gold);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-fallback { font-size: 50px; font-family: 'Orbitron'; font-weight: bold; color: var(--neon-blue); display: none; }
+
+        h1 {
+            font-family: 'Orbitron'; font-size: 28px; text-align: center; margin: 10px 0;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        h2 { text-align: center; font-size: 16px; color: #888; letter-spacing: 4px; margin-bottom: 20px; font-weight: bold; }
+
+        .menu-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ddd; padding: 18px; margin-bottom: 12px;
+            text-align: left; font-family: 'Orbitron'; cursor: pointer;
+            transition: 0.3s; border-radius: 8px; font-size: 16px; display: flex; align-items: center;
+        }
+        .menu-btn:hover { background: rgba(0, 243, 255, 0.1); border-color: var(--neon-blue); padding-left: 25px; }
+        .menu-btn.active {
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent);
+            border-left: 5px solid var(--neon-gold); color: var(--neon-gold);
+        }
+
+        /* CONTENT AREA */
+        .main-content {
+            flex: 1; position: relative; overflow-y: auto;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            padding: 40px;
+        }
+
+        /* --- READER (DERS NOTLARI) --- */
+        .reader-container {
+            max-width: 1100px; margin: 0 auto;
+            background: rgba(10, 12, 20, 0.95);
+            padding: 60px;
+            border-radius: 20px; border: 1px solid #333;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8);
+            display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reader-title { 
+            font-family: 'Orbitron'; font-size: 42px; color: var(--neon-blue); 
+            border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 40px;
+        }
+
+        /* İÇERİK STİLLERİ (RICH TEXT) */
+        .content-body { font-size: 18px; line-height: 1.8; color: #ccc; }
+        .content-body h3 { 
+            color: var(--neon-gold); font-size: 26px; margin-top: 50px; margin-bottom: 20px;
+            border-left: 5px solid var(--neon-gold); padding-left: 15px; background: rgba(255, 215, 0, 0.05); padding-top:10px; padding-bottom:10px;
+        }
+        .content-body p { margin-bottom: 20px; text-align: justify; }
+        .content-body ul { background: rgba(255,255,255,0.03); padding: 30px 50px; border-radius: 15px; border: 1px dashed #444; }
+        .content-body li { margin-bottom: 12px; color: #e0e0e0; }
+        .content-body strong { color: white; }
+
+        /* KUTULAR */
+        .box-warning {
+            border-left: 6px solid var(--neon-pink); background: rgba(188, 19, 254, 0.08);
+            padding: 25px; margin: 30px 0; color: #fff; font-weight: 500; border-radius: 0 10px 10px 0;
+        }
+        .box-formula {
+            border: 2px solid var(--neon-green); background: rgba(10, 255, 10, 0.05);
+            padding: 20px; margin: 30px 0; text-align: center; font-family: 'Orbitron'; font-size: 24px; color: var(--neon-green); border-radius: 15px;
+        }
+
+        /* --- GRAFİKLER (SVG) --- */
+        .diagram-container {
+            display: flex; justify-content: center; margin: 40px 0;
+            background: #080810; border: 1px solid #333; border-radius: 15px; padding: 20px;
+        }
+        svg { max-width: 100%; height: auto; }
+        
+        /* Çizim Stilleri */
+        .stroke-blue { stroke: var(--neon-blue); stroke-width: 3; fill: none; }
+        .stroke-gold { stroke: var(--neon-gold); stroke-width: 3; fill: none; }
+        .stroke-pink { stroke: var(--neon-pink); stroke-width: 3; fill: none; }
+        .fill-blue { fill: var(--neon-blue); }
+        .text-label { fill: white; font-family: 'Rajdhani'; font-size: 14px; }
+        .grid-line { stroke: #333; stroke-width: 1; }
+
+        /* GRID SYSTEM */
+        .grid-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .card-topic {
+            background: linear-gradient(145deg, #1a1a2e, #101018);
+            border: 1px solid #333; border-radius: 15px; padding: 30px; cursor: pointer;
+            transition: 0.4s; position: relative; overflow: hidden;
+        }
+        .card-topic:hover { transform: translateY(-8px); border-color: var(--neon-blue); box-shadow: 0 10px 40px rgba(0, 243, 255, 0.15); }
+
+        /* QUIZ */
+        .quiz-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100;
+            display: none; justify-content: center; align-items: center;
+        }
+        .quiz-modal {
+            background: #121220; padding: 50px; border-radius: 20px; border: 2px solid var(--neon-gold);
+            width: 800px; text-align: center; box-shadow: 0 0 100px rgba(255, 215, 0, 0.2);
+        }
+
+        /* UTILS */
+        .hidden { display: none !important; }
+        .btn { padding: 15px 40px; background: var(--neon-blue); color: black; border: none; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 18px; font-family: 'Orbitron'; transition:0.3s; }
+        .btn:hover { background: white; box-shadow: 0 0 20px white; }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="sidebar">
+        <div class="logo-box" id="userLogo"><span class="logo-fallback" id="fallbackText">KM</span></div>
+        <h1>KOMUTAN MERİÇ</h1>
+        <h2>YKS ÜSSÜ</h2>
+        
+        <div style="margin: 20px 0; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333;">
+            <div style="display:flex; justify-content:space-between; color: var(--neon-gold); font-weight:bold; margin-bottom:8px;">
+                <span id="levelLabel">LEVEL 1</span>
+                <span id="xpText">0 XP</span>
+            </div>
+            <div style="height: 10px; background: #222; border-radius: 5px; overflow: hidden;">
+                <div id="xpBar" style="height: 100%; background: var(--neon-gold); width: 0%; transition: 0.5s;"></div>
+            </div>
+        </div>
+
+        <nav>
+            <button class="menu-btn active" onclick="nav('home')">🚀 ANA KARARGAH</button>
+            <button class="menu-btn" onclick="nav('topics')">📚 MEGA KÜTÜPHANE</button>
+            <button class="menu-btn" onclick="startRandomQuiz()">⚔️ MEYDAN OKU (Grafikli)</button>
+            <button class="menu-btn" style="color:#ff4444" onclick="resetSys()">⚠️ SİSTEMİ SIFIRLA</button>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div id="view-home">
+            <h1 style="text-align: left; font-size: 48px; margin-bottom: 10px;">GÖREV ANI GELDİ <span style="color:var(--neon-gold)">KOMUTAN.</span></h1>
+            <p style="color: #888; font-size: 20px; margin-bottom: 50px;">Tüm sistemler çevrimiçi. Veri tabanı TİTAN seviyesine yükseltildi.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div style="background: rgba(0, 243, 255, 0.05); padding: 40px; border-radius: 20px; border: 1px solid var(--neon-blue);">
+                    <h3 style="margin:0; color:var(--neon-blue)">BİTİRİLEN KONULAR</h3>
+                    <div id="statTopics" style="font-size: 60px; font-weight: 900; margin: 15px 0;">0</div>
+                </div>
+                <div style="background: rgba(255, 215, 0, 0.05); padding: 40px; border-radius: 20px; border: 1px solid var(--neon-gold);">
+                    <h3 style="margin:0; color:var(--neon-gold)">TOPLAM PUAN (XP)</h3>
+                    <div id="statXP" style="font-size: 60px; font-weight: 900; margin: 15px 0;">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-topics" class="hidden">
+            <h1 style="text-align: left; margin-bottom: 40px; color: var(--neon-blue);">FİZİK ARŞİVİ (V4.0)</h1>
+            <div class="grid-topics" id="topicGrid"></div>
+        </div>
+
+        <div id="view-reader" class="reader-container">
+            <div class="reader-title">
+                <span id="readTitle">Konu Başlığı</span>
+                <button class="btn" style="float:right; padding: 10px 20px; font-size: 14px; background: #333;" onclick="nav('topics')">KAPAT X</button>
+            </div>
+            <div class="content-body" id="readBody"></div>
+            <div style="margin-top: 60px; text-align: center;">
+                <button class="btn" onclick="finishTopic()">✅ KONUYU TAMAMLA (+100 XP)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="quizModal" class="quiz-overlay">
+    <div class="quiz-modal">
+        <h2 style="color: var(--neon-gold); font-size: 32px;">⚡ ANLIK SORGU ⚡</h2>
+        <div id="quizQ" style="font-size: 24px; margin: 30px 0; font-weight: bold; color:white;">Soru...</div>
+        <div id="quizOpts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
+        <div id="quizRes" style="margin-top: 30px; font-weight: bold; height: 30px; font-size: 20px;"></div>
+        <button onclick="closeQuiz()" style="margin-top: 30px; background:transparent; border:1px solid #555; color:#888; padding:10px 30px; cursor:pointer;">ÇIKIŞ</button>
+    </div>
+</div>
+
+<script>
+/* ----------------------------------------------------
+   MEGA VERİ TABANI (TİTAN EDITION)
+   Grafikler SVG formatında kodun içine gömülmüştür.
+   ----------------------------------------------------
+*/
+const DB = [
+    {
+        id: "fizik_giris",
+        title: "1. Fizik Bilimine Giriş",
+        desc: "Fiziğin doğası, alt dallar, büyüklükler ve vektörler.",
+        content: `
+            <h3>1. Fizik Nedir?</h3>
+            <p>Madde ve enerji arasındaki etkileşimi inceleyen, doğa olaylarını matematiksel dille açıklayan bilim dalıdır. Fizik <strong>Sınanabilir</strong>, <strong>Yanlışlanabilir</strong> ve <strong>Delillere Dayalıdır</strong>.</p>
+            <div class="box-warning">⚠️ Metafizik, Teoloji, Astroloji fizik değildir!</div>
+
+            <h3>2. Fiziğin Alt Dalları (KAMYONET)</h3>
+            <ul>
+                <li><strong>K</strong>atıhal Fiziği: Kristal yapılar, nanoteknoloji, yarı iletkenler.</li>
+                <li><strong>A</strong>tom Fiziği: Atomun yapısı, moleküller arası bağlar.</li>
+                <li><strong>M</strong>ekanik: Hareket, kuvvet, denge, statik.</li>
+                <li><strong>Y</strong>üksek Enerji ve Plazma: Güneşin yapısı, CERN, atom altı parçacıklar.</li>
+                <li><strong>O</strong>ptik: Işık, mercek, ayna, teleskop.</li>
+                <li><strong>N</strong>ükleer Fizik: Atom ÇEKİRDEĞİ, fisyon/füzyon, radyasyon.</li>
+                <li><strong>E</strong>lektromanyetizma: Yükler, mıknatıslar, elektrik motorları.</li>
+                <li><strong>T</strong>ermodinamik: Isı alışverişi, yalıtım, motor verimi.</li>
+            </ul>
+
+            <h3>3. Vektörler ve Bileşke Kuvvet</h3>
+            <p>Fizikte büyüklükler Skaler (sadece sayı) ve Vektörel (yönlü) olarak ikiye ayrılır. Kuvvet, Hız, İvme vektöreldir.</p>
+            
+            <div class="diagram-container">
+                <svg width="400" height="200" viewBox="0 0 400 200">
+                    <line x1="50" y1="150" x2="350" y2="150" class="grid-line" /> <line x1="100" y1="150" x2="250" y2="150" class="stroke-blue" marker-end="url(#arrow)" /> <text x="170" y="140" class="text-label" fill="#00f3ff">F1 = 15N</text>
+                    
+                    <line x1="250" y1="150" x2="300" y2="150" class="stroke-gold" marker-end="url(#arrow)" /> <text x="260" y="130" class="text-label" fill="#ffd700">F2 = 5N</text>
+                    
+                    <text x="100" y="180" class="text-label" fill="white">Bileşke (R) = F1 + F2 = 20N (Sağa)</text>
+                    
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                          <path d="M0,0 L0,6 L9,3 z" fill="white" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <p>Aynı yönlü vektörler toplanır, zıt yönlüler çıkarılır. Vektörlerin ucu ucuna eklenmesi yönteminde sıra önemli değildir.</p>
+        `,
+        questions: [
+            { q: "Kristal yapıları inceleyen fizik dalı?", opts: ["Optik", "Katıhal", "Mekanik", "Nükleer"], a: 1 },
+            { q: "Hangisi vektörel büyüklüktür?", opts: ["Kütle", "Zaman", "Sıcaklık", "Kuvvet"], a: 3 }
+        ]
+    },
+    {
+        id: "madde",
+        title: "2. Madde ve Özellikleri",
+        desc: "Özkütle grafikleri, dayanıklılık ve yapışma kuvvetleri.",
+        content: `
+            <h3>1. Özkütle (Yoğunluk)</h3>
+            <p>Birim hacimdeki madde miktarıdır. Sabit sıcaklık ve basınçta maddeler için ayırt edicidir.</p>
+            <div class="box-formula">d = m / V</div>
+            
+            <div class="diagram-container">
+                <svg width="300" height="250" viewBox="0 0 300 250">
+                    <line x1="40" y1="210" x2="280" y2="210" class="grid-line" />
+                    <line x1="40" y1="210" x2="40" y2="20" class="grid-line" />
+                    <text x="270" y="230" class="text-label">Hacim (V)</text>
+                    <text x="10" y="30" class="text-label">Kütle (m)</text>
+                    
+                    <line x1="40" y1="210" x2="240" y2="50" class="stroke-pink" />
+                    <circle cx="140" cy="130" r="4" class="fill-blue" />
+                    <text x="150" y="130" class="text-label" fill="#bc13fe">Eğim = Özkütle (d)</text>
+                </svg>
+            </div>
+            <p>Grafiğin eğimi (tan α) özkütleyi verir. Kütle artsa da hacim de artacağı için eğim sabit kalır.</p>
+
+            <h3>2. Dayanıklılık</h3>
+            <p>Dayanıklılık, cismin kendi ağırlığına karşı direncidir. <strong>Kesit Alanı / Hacim</strong> ile orantılıdır.</p>
+            <ul>
+                <li>Düzgün cisimlerde Dayanıklılık ∝ <strong>1 / Yükseklik</strong></li>
+                <li>Küçük canlılar (karınca), büyük canlılara (fil) göre kendi ağırlıklarına oranla daha dayanıklıdır.</li>
+            </ul>
+
+            <h3>3. Yüzey Gerilimi ve Kılcallık</h3>
+            <p><strong>Kohezyon:</strong> Aynı moleküllerin tutunması (Yüzey gerilimini oluşturur).<br>
+            <strong>Adhezyon:</strong> Farklı moleküllerin yapışması (Kılcallığı oluşturur).</p>
+        `,
+        questions: [
+            { q: "Kütle-Hacim grafiğinin eğimi neyi verir?", opts: ["Ağırlık", "Özkütle", "Dayanıklılık", "Kuvvet"], a: 1 },
+            { q: "Küp şeker içine suyun işlemesi hangi olaydır?", opts: ["Yüzey Gerilimi", "Kılcallık", "Kaldırma", "Genleşme"], a: 1 }
+        ]
+    },
+    {
+        id: "hareket",
+        title: "3. Hareket ve Kuvvet",
+        desc: "Grafik okuma, ivme, hız ve Newton yasaları.",
+        content: `
+            <h3>1. Hareket Grafikleri</h3>
+            <p>Grafikler fiziğin dilidir. Aşağıdaki Hız-Zaman grafiğini inceleyelim:</p>
+            
+            <div class="diagram-container">
+                <svg width="400" height="250" viewBox="0 0 400 250">
+                    <line x1="50" y1="200" x2="350" y2="200" class="grid-line" /> <line x1="50" y1="200" x2="50" y2="20" class="grid-line" />  <text x="340" y="220" class="text-label">Zaman (t)</text>
+                    <text x="20" y="30" class="text-label">Hız (v)</text>
+                    
+                    <path d="M50,200 L150,50 L250,50 L350,200" class="stroke-blue" fill="rgba(0, 243, 255, 0.1)" />
+                    
+                    <text x="80" y="120" class="text-label" fill="white">Hızlanma</text>
+                    <text x="180" y="40" class="text-label" fill="white">Sabit Hız</text>
+                    <text x="280" y="120" class="text-label" fill="white">Yavaşlama</text>
+                    
+                    <text x="150" y="180" class="text-label" fill="#ffd700">Taralı Alan = Yer Değiştirme (Δx)</text>
+                </svg>
+            </div>
+            <ul>
+                <li>Hız-Zaman grafiğinin altındaki alan <strong>Yer Değiştirmeyi</strong> verir.</li>
+                <li>Hız-Zaman grafiğinin eğimi <strong>İvmeyi</strong> verir.</li>
+                <li>Konum-Zaman grafiğinin eğimi <strong>Hızı</strong> verir.</li>
+            </ul>
+
+            <h3>2. Newton'un Yasaları</h3>
+            <div class="box-formula">F_net = m . a</div>
+            <p>Bir cisme etki eden net kuvvet sıfırsa cisim ya durur ya da sabit hızla gider (Eylemsizlik). Net kuvvet varsa cisim ivmeli hareket eder.</p>
+        `,
+        questions: [
+            { q: "Hız-Zaman grafiğinin altındaki alan neyi verir?", opts: ["İvme", "Hız", "Yer Değiştirme", "Kuvvet"], a: 2 },
+            { q: "Net kuvvet sıfırsa cisim nasıl hareket eder?", opts: ["Hızlanır", "Yavaşlar", "Sabit Hızla Gider", "Titreşir"], a: 2 }
+        ]
+    },
+    {
+        id: "isi",
+        title: "4. Isı ve Sıcaklık",
+        desc: "Hal değişimi grafikleri, genleşme ve termometreler.",
+        content: `
+            <h3>1. Isı vs Sıcaklık</h3>
+            <p>Sıcaklık bir ölçümdür (Termometre, Celcius). Isı bir enerjidir (Kalorimetre, Joule). Isı, sıcaklık farkından dolayı akar.</p>
+
+            <h3>2. Hal Değişim Grafiği</h3>
+            <p>Bir buz parçasını ısıttığımızda sıcaklık ve hal değişimi şöyle olur:</p>
+            
+            <div class="diagram-container">
+                <svg width="400" height="250" viewBox="0 0 400 250">
+                    <line x1="50" y1="220" x2="380" y2="220" class="grid-line" /> <line x1="50" y1="220" x2="50" y2="20" class="grid-line" />  <text x="350" y="240" class="text-label">Isı (Q)</text>
+                    <text x="10" y="30" class="text-label">Sıcaklık (T)</text>
+                    
+                    <polyline points="50,200 100,150 200,150 300,50" class="stroke-pink" fill="none" />
+                    
+                    <circle cx="50" cy="200" r="3" fill="white"/>
+                    <circle cx="100" cy="150" r="3" fill="white"/>
+                    <circle cx="200" cy="150" r="3" fill="white"/>
+                    
+                    <line x1="40" y1="150" x2="60" y2="150" stroke="white"/>
+                    <text x="15" y="155" class="text-label">0°C</text>
+                    
+                    <text x="60" y="190" class="text-label">Buz Isınıyor</text>
+                    <text x="120" y="140" class="text-label" fill="#0aff0a">ERİME (Sıcaklık Sabit)</text>
+                    <text x="220" y="100" class="text-label">Su Isınıyor</text>
+                </svg>
+            </div>
+            <div class="box-warning">Hal değişimi sırasında (Erime, Kaynama) saf maddelerin sıcaklığı DEĞİŞMEZ! Verilen ısı bağları koparmaya harcanır.</div>
+        `,
+        questions: [
+            { q: "Hal değişimi sırasında saf maddenin sıcaklığı?", opts: ["Artar", "Azalır", "Sabit Kalır", "Sıfırlanır"], a: 2 },
+            { q: "Isı birimi nedir?", opts: ["Celcius", "Kelvin", "Watt", "Joule"], a: 3 }
+        ]
+    },
+    {
+        id: "elektrik",
+        title: "5. Elektrik ve Manyetizma",
+        desc: "Devreler, Ohm yasası, dirençler ve lamba parlaklığı.",
+        content: `
+            <h3>1. Ohm Yasası</h3>
+            <div class="box-formula">V = I . R</div>
+            <p>Bir iletkenin uçları arasındaki potansiyel farkın (Volt), akıma (Amper) oranı sabittir. Bu orana Direnç (Ohm) denir.</p>
+
+            <h3>2. Basit Elektrik Devresi</h3>
+            <p>Akım, üretecin (+) kutbundan çıkar, devreyi dolaşıp (-) kutbuna girer.</p>
+            
+            <div class="diagram-container">
+                <svg width="300" height="200" viewBox="0 0 300 200">
+                    <rect x="50" y="50" width="200" height="100" class="stroke-blue" stroke-width="2" />
+                    
+                    <path d="M120,50 L130,30 L140,70 L150,30 L160,70 L170,30 L180,50" class="stroke-gold" fill="none"/>
+                    <text x="135" y="20" class="text-label" fill="#ffd700">R (Direnç)</text>
+                    
+                    <line x1="140" y1="150" x2="160" y2="150" stroke="black" stroke-width="10" /> <line x1="145" y1="140" x2="145" y2="160" class="stroke-blue" /> <line x1="155" y1="145" x2="155" y2="155" class="stroke-blue" stroke-width="4" /> <text x="130" y="175" class="text-label" fill="#00f3ff">V (Pil)</text>
+                    
+                    <path d="M60,100 L60,90 L50,100 L60,110 z" fill="#0aff0a"/>
+                    <text x="70" y="105" class="text-label" fill="#0aff0a">Akım (i)</text>
+                </svg>
+            </div>
+            
+            <h3>3. Seri ve Paralel Bağlama</h3>
+            <ul>
+                <li><strong>Seri Bağlama:</strong> Akım aynıdır, Potansiyeller toplanır. R_eş = R1 + R2.</li>
+                <li><strong>Paralel Bağlama:</strong> Potansiyeller aynıdır, Akımlar toplanır. 1/R_eş = 1/R1 + 1/R2.</li>
+            </ul>
+        `,
+        questions: [
+            { q: "V = I.R formülü kime aittir?", opts: ["Newton", "Ohm", "Pascal", "Tesla"], a: 1 },
+            { q: "Seri bağlı dirençlerde ne eşittir?", opts: ["Akım", "Gerilim", "Güç", "Direnç"], a: 0 }
+        ]
+    },
+    {
+        id: "optik",
+        title: "6. Optik",
+        desc: "Yansıma, aynalar, kırılma ve renkler.",
+        content: `
+            <h3>1. Yansıma Kanunları</h3>
+            <p>Işığın bir yüzeye çarpıp geri dönmesine yansıma denir.</p>
+            
+            <div class="diagram-container">
+                <svg width="400" height="200" viewBox="0 0 400 200">
+                    <rect x="50" y="150" width="300" height="10" fill="#333" stroke="#555"/>
+                    <line x1="50" y1="150" x2="350" y2="150" stroke="#00f3ff" stroke-width="2"/>
+                    
+                    <line x1="200" y1="150" x2="200" y2="20" stroke="#666" stroke-dasharray="5,5"/>
+                    <text x="205" y="30" class="text-label">Normal (N)</text>
+                    
+                    <line x1="80" y1="50" x2="200" y2="150" class="stroke-gold" marker-end="url(#arrow)"/>
+                    <line x1="200" y1="150" x2="320" y2="50" class="stroke-gold" marker-end="url(#arrow)"/>
+                    
+                    <text x="100" y="40" class="text-label">Gelen Işın</text>
+                    <text x="280" y="40" class="text-label">Yansıyan Işın</text>
+                    
+                    <text x="170" y="130" class="text-label" fill="white">α</text>
+                    <text x="220" y="130" class="text-label" fill="white">β</text>
+                </svg>
+            </div>
+            <div class="box-formula">Gelme Açısı (α) = Yansıma Açısı (β)</div>
+
+            <h3>2. Aynalar</h3>
+            <ul>
+                <li><strong>Düz Ayna:</strong> Simetrik, sanal ve eşit boyda görüntü.</li>
+                <li><strong>Çukur Ayna:</strong> Odaklayıcıdır. Görüntü büyük/küçük, ters/düz olabilir. (Makyaj aynası).</li>
+                <li><strong>Tümsek Ayna:</strong> Dağıtıcıdır. Görüntü daima KÜÇÜK, DÜZ ve SANALDIR. (Güvenlik aynaları).</li>
+            </ul>
+        `,
+        questions: [
+            { q: "Gelme açısı yansıma açısına...", opts: ["Büyüktür", "Küçüktür", "Eşittir", "Bağlı Değildir"], a: 2 },
+            { q: "Daima küçük ve düz görüntü veren ayna?", opts: ["Çukur", "Düz", "Tümsek", "Hiçbiri"], a: 2 }
+        ]
+    }
+];
+
+// --- SİSTEM DEĞİŞKENLERİ ---
+let user = { xp: 0, level: 1, finished: [], totalXP: 0 };
+
+// --- FONKSİYONLAR ---
+window.onload = function() {
+    // Logoyu kontrol et (JPEG)
+    const img = new Image();
+    img.src = 'logo.jpeg';
+    img.onload = () => { document.querySelector('.logo-box').style.backgroundImage = "url('logo.jpeg')"; };
+    
+    loadSys();
+    renderTopics();
+};
+
+function nav(view) {
+    document.getElementById('view-home').classList.add('hidden');
+    document.getElementById('view-topics').classList.add('hidden');
+    document.getElementById('view-reader').style.display = 'none'; // Animasyon için display none
+    document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+
+    if(view === 'home') {
+        document.getElementById('view-home').classList.remove('hidden');
+        document.querySelectorAll('.menu-btn')[0].classList.add('active');
+    } else if (view === 'topics') {
+        document.getElementById('view-topics').classList.remove('hidden');
+        document.querySelectorAll('.menu-btn')[1].classList.add('active');
+    }
+}
+
+function renderTopics() {
+    const grid = document.getElementById('topicGrid');
+    grid.innerHTML = '';
+    DB.forEach(t => {
+        const isDone = user.finished.includes(t.id);
+        const statusHTML = isDone ? '<span style="color:var(--neon-green)">✅ TAMAMLANDI</span>' : '<span style="color:#666">⭕ BAŞLANMADI</span>';
+        
+        const card = document.createElement('div');
+        card.className = 'card-topic';
+        card.innerHTML = `
+            <h3 style="color:white; margin:0 0 10px 0">${t.title}</h3>
+            <p style="color:#888; font-size:14px; margin-bottom:20px;">${t.desc}</p>
+            <div style="font-weight:bold; font-size:14px;">${statusHTML}</div>
+        `;
+        card.onclick = () => openReader(t.id);
+        grid.appendChild(card);
+    });
+}
+
+let activeTopic = null;
+function openReader(id) {
+    activeTopic = id;
+    const t = DB.find(x => x.id === id);
+    nav('none'); // Hepsini gizle
+    const r = document.getElementById('view-reader');
+    r.style.display = 'block';
+    document.getElementById('readTitle').innerText = t.title;
+    document.getElementById('readBody').innerHTML = t.content;
+}
+
+function finishTopic() {
+    if(activeTopic && !user.finished.includes(activeTopic)) {
+        user.finished.push(activeTopic);
+        addXP(100);
+        alert("GÖREV BAŞARILI: +100 XP KAZANDINIZ!");
+        saveSys();
+        nav('topics');
+        renderTopics();
+    } else {
+        alert("Bu görevi zaten tamamladınız Komutan.");
+        nav('topics');
+    }
+}
+
+// --- QUIZ MOTORU ---
+function startRandomQuiz() {
+    const t = DB[Math.floor(Math.random() * DB.length)];
+    const q = t.questions[Math.floor(Math.random() * t.questions.length)];
+    
+    const m = document.getElementById('quizModal');
+    m.style.display = 'flex';
+    document.getElementById('quizQ').innerText = q.q;
+    document.getElementById('quizRes').innerText = "";
+    
+    const opts = document.getElementById('quizOpts');
+    opts.innerHTML = '';
+    q.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.style.background = '#222';
+        btn.innerText = opt;
+        btn.onclick = () => {
+            if(idx === q.a) {
+                btn.style.background = 'var(--neon-green)';
+                document.getElementById('quizRes').innerText = "DOĞRU CEVAP! (+20 XP)";
+                document.getElementById('quizRes').style.color = "var(--neon-green)";
+                addXP(20);
+            } else {
+                btn.style.background = 'red';
+                document.getElementById('quizRes').innerText = "YANLIŞ CEVAP!";
+                document.getElementById('quizRes').style.color = "red";
+            }
+        };
+        opts.appendChild(btn);
+    });
+}
+function closeQuiz() { document.getElementById('quizModal').style.display = 'none'; }
+
+// --- SAVE SYSTEM ---
+function loadSys() {
+    const d = localStorage.getItem('yks_titan_v4');
+    if(d) user = JSON.parse(d);
+    updateHUD();
+}
+function saveSys() {
+    localStorage.setItem('yks_titan_v4', JSON.stringify(user));
+    updateHUD();
+}
+function resetSys() {
+    if(confirm("TÜM İLERLEME SİLİNECEK! ONAYLIYOR MUSUNUZ?")) {
+        localStorage.removeItem('yks_titan_v4');
+        location.reload();
+    }
+}
+function addXP(amount) {
+    user.xp += amount;
+    user.totalXP += amount;
+    const req = user.level * 200;
+    if(user.xp >= req) {
+        user.xp -= req;
+        user.level++;
+        alert(`RÜTBE ATLADINIZ: LEVEL ${user.level}`);
+    }
+    saveSys();
+}
+function updateHUD() {
+    const req = user.level * 200;
+    const pct = (user.xp / req) * 100;
+    document.getElementById('xpText').innerText = `${user.xp}/${req} XP`;
+    document.getElementById('levelLabel').innerText = `LEVEL ${user.level}`;
+    document.getElementById('xpBar').style.width = `${pct}%`;
+    document.getElementById('statTopics').innerText = user.finished.length;
+    document.getElementById('statXP').innerText = user.totalXP;
+}
+</script>
+</body>
+</html>
